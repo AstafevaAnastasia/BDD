@@ -1,8 +1,7 @@
-package ru.netology;
+package ru.netology.data;
 
 import com.github.javafaker.Faker;
 import lombok.Value;
-
 import java.util.Locale;
 
 public class DataHelper {
@@ -33,6 +32,10 @@ public class DataHelper {
 
     public static int generateInvalidAmount(int balance) {
         return Math.abs(balance) + faker.number().numberBetween(1, 10000);
+    }
+
+    public static String getMaskedNumber(String cardNumber) {
+        return "**** **** **** " + cardNumber.substring(cardNumber.length() - 4);
     }
 
     @Value
