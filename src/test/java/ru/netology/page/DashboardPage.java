@@ -2,8 +2,8 @@ package ru.netology.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import ru.netology.data.DataHelper;
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
@@ -11,18 +11,25 @@ public class DashboardPage {
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
 
-    public int getCardBalance(DataHelper.CardInfo cardInfo) {
-        return extractBalance(findCardElement(cardInfo).getText());
+    public int getCardBalance(String maskedCardNumber) {
+        return extractBalance(findCardElement(maskedCardNumber).getText());
     }
 
-    public TransferPage selectCardToTransfer(DataHelper.CardInfo cardInfo) {
-        findCardElement(cardInfo).$("button").click();
+    public void checkCardBalance(String maskedCardNumber, int expectedBalance) {
+        int actualBalance = getCardBalance(maskedCardNumber);
+        if (actualBalance != expectedBalance) {
+            throw new AssertionError("Expected balance: " + expectedBalance +
+                    ", but was: " + actualBalance);
+        }
+    }
+
+    public TransferPage selectCardToTransfer(String maskedCardNumber) {
+        findCardElement(maskedCardNumber).$("button").click();
         return new TransferPage();
     }
 
-    private SelenideElement findCardElement(DataHelper.CardInfo cardInfo) {
-        String maskedNumber = DataHelper.getMaskedNumber(cardInfo.getCardNumber());
-        return cards.findBy(visible).shouldHave(com.codeborne.selenide.Condition.text(maskedNumber));
+    private SelenideElement findCardElement(String maskedNumber) {
+        return cards.findBy(text(maskedNumber)).shouldBe(visible);
     }
 
     private int extractBalance(String text) {

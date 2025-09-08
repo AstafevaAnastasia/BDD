@@ -2,7 +2,9 @@ package ru.netology.page;
 
 import com.codeborne.selenide.SelenideElement;
 import ru.netology.data.DataHelper;
+
 import static com.codeborne.selenide.Condition.visible;
+import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage {
@@ -22,7 +24,7 @@ public class TransferPage {
         transferButton.click();
     }
 
-    public String getErrorMessage() {
-        return errorMessage.shouldBe(visible).getText();
+    public void checkErrorMessage(String expectedErrorText) {
+        errorMessage.shouldBe(visible).shouldHave(text(expectedErrorText));
     }
 }

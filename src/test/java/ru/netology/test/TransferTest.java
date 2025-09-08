@@ -1,6 +1,9 @@
 package ru.netology.test;
 
 import com.codeborne.selenide.Configuration;
+import com.codeborne.selenide.WebDriverRunner;
+import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataHelper;
@@ -16,7 +19,10 @@ public class TransferTest {
 
     @BeforeEach
     void setup() {
-        Configuration.browser = "chrome";
+        WebDriverManager.chromedriver().setup();
+        Configuration.browserSize = "1920x1080";
+        Configuration.timeout = 15000;
+
         open("http://localhost:9999");
         var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
@@ -25,26 +31,31 @@ public class TransferTest {
         dashboardPage = verificationPage.validVerify(verificationCode);
     }
 
+    @AfterEach
+    void tearDown() {
+        WebDriverRunner.closeWebDriver();
+    }
+
     @Test
     void shouldTransferMoneyFromFirstToSecond() {
         var firstCard = DataHelper.getFirstCardInfo();
         var secondCard = DataHelper.getSecondCardInfo();
 
-        var firstCardBalance = dashboardPage.getCardBalance(firstCard);
-        var secondCardBalance = dashboardPage.getCardBalance(secondCard);
+        var maskedFirstCard = DataHelper.getMaskedNumber(firstCard.getCardNumber());
+        var maskedSecondCard = DataHelper.getMaskedNumber(secondCard.getCardNumber());
+
+        var firstCardBalance = dashboardPage.getCardBalance(maskedFirstCard);
+        var secondCardBalance = dashboardPage.getCardBalance(maskedSecondCard);
         var amount = DataHelper.generateValidAmount(firstCardBalance);
 
         var expectedFirstCardBalance = firstCardBalance - amount;
         var expectedSecondCardBalance = secondCardBalance + amount;
 
-        var transferPage = dashboardPage.selectCardToTransfer(secondCard);
+        var transferPage = dashboardPage.selectCardToTransfer(maskedSecondCard);
         dashboardPage = transferPage.makeValidTransfer(String.valueOf(amount), firstCard);
 
-        var actualFirstCardBalance = dashboardPage.getCardBalance(firstCard);
-        var actualSecondCardBalance = dashboardPage.getCardBalance(secondCard);
-
-        assertEquals(expectedFirstCardBalance, actualFirstCardBalance);
-        assertEquals(expectedSecondCardBalance, actualSecondCardBalance);
+        dashboardPage.checkCardBalance(maskedFirstCard, expectedFirstCardBalance);
+        dashboardPage.checkCardBalance(maskedSecondCard, expectedSecondCardBalance);
     }
 
     @Test
@@ -52,18 +63,19 @@ public class TransferTest {
         var firstCard = DataHelper.getFirstCardInfo();
         var secondCard = DataHelper.getSecondCardInfo();
 
-        var firstCardBalance = dashboardPage.getCardBalance(firstCard);
-        var secondCardBalance = dashboardPage.getCardBalance(secondCard);
+        var maskedFirstCard = DataHelper.getMaskedNumber(firstCard.getCardNumber());
+        var maskedSecondCard = DataHelper.getMaskedNumber(secondCard.getCardNumber());
+
+        var firstCardBalance = dashboardPage.getCardBalance(maskedFirstCard);
+        var secondCardBalance = dashboardPage.getCardBalance(maskedSecondCard);
         var amount = DataHelper.generateInvalidAmount(firstCardBalance);
 
-        var transferPage = dashboardPage.selectCardToTransfer(secondCard);
+        var transferPage = dashboardPage.selectCardToTransfer(maskedSecondCard);
         transferPage.makeTransfer(String.valueOf(amount), firstCard);
 
-        String error = transferPage.getErrorMessage();
-        assertTrue(error.contains("Ошибка"), "Ожидалось сообщение об ошибке");
+        transferPage.checkErrorMessage("Ошибка");
 
-        // Verify balances unchanged
-        assertEquals(firstCardBalance, dashboardPage.getCardBalance(firstCard));
-        assertEquals(secondCardBalance, dashboardPage.getCardBalance(secondCard));
+        dashboardPage.checkCardBalance(maskedFirstCard, firstCardBalance);
+        dashboardPage.checkCardBalance(maskedSecondCard, secondCardBalance);
     }
 }
