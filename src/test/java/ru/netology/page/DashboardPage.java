@@ -2,9 +2,11 @@ package ru.netology.page;
 
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.SelenideElement;
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.text;
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.$x;
+
+
 
 public class DashboardPage {
     private ElementsCollection cards = $$(".list__item");
@@ -16,11 +18,10 @@ public class DashboardPage {
     }
 
     public void checkCardBalance(String maskedCardNumber, int expectedBalance) {
-        int actualBalance = getCardBalance(maskedCardNumber);
-        if (actualBalance != expectedBalance) {
-            throw new AssertionError("Expected balance: " + expectedBalance +
-                    ", but was: " + actualBalance);
-        }
+        $x("//div[contains(text(), '" + maskedCardNumber + "')]").shouldBe(visible);
+
+        $x("//div[contains(text(), '" + maskedCardNumber + "')]//following-sibling::*[contains(@class, 'balance')]")
+                .shouldHave(exactText(String.valueOf(expectedBalance)));
     }
 
     public TransferPage selectCardToTransfer(String maskedCardNumber) {

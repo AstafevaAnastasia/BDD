@@ -1,39 +1,25 @@
 package ru.netology.test;
 
 import com.codeborne.selenide.Configuration;
-import com.codeborne.selenide.WebDriverRunner;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.data.DataHelper;
 import ru.netology.page.DashboardPage;
 import ru.netology.page.LoginPage;
-import ru.netology.page.TransferPage;
 import static com.codeborne.selenide.Selenide.open;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TransferTest {
     DashboardPage dashboardPage;
 
     @BeforeEach
     void setup() {
-        WebDriverManager.chromedriver().setup();
         Configuration.browserSize = "1920x1080";
-        Configuration.timeout = 15000;
-
         open("http://localhost:9999");
         var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCode();
         dashboardPage = verificationPage.validVerify(verificationCode);
-    }
-
-    @AfterEach
-    void tearDown() {
-        WebDriverRunner.closeWebDriver();
     }
 
     @Test
