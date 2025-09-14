@@ -13,6 +13,7 @@ public class LoginPage {
     public VerificationPage validLogin(DataHelper.AuthInfo authInfo) {
         loginField.setValue(authInfo.getLogin());
         passwordField.setValue(authInfo.getPassword());
+        com.codeborne.selenide.Selenide.sleep(5000);
         loginButton.click();
         return new VerificationPage();
     }

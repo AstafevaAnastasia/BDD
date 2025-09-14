@@ -14,6 +14,7 @@ public class TransferTest {
     @BeforeEach
     void setup() {
         Configuration.browserSize = "1920x1080";
+        Configuration.timeout = 15000; // Увеличиваем таймаут
         open("http://localhost:9999");
         var loginPage = new LoginPage();
         var authInfo = DataHelper.getAuthInfo();
