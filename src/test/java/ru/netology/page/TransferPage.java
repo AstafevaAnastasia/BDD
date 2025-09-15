@@ -16,20 +16,16 @@ public class TransferPage {
 
     public DashboardPage makeValidTransfer(String amount, DataHelper.CardInfo fromCard) {
         makeTransfer(amount, fromCard);
-        // Добавляем ожидание для просмотра результата
-        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
         return new DashboardPage();
     }
 
     public void makeTransfer(String amount, DataHelper.CardInfo fromCard) {
         amountField.setValue(amount);
         fromField.setValue(fromCard.getCardNumber());
-        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
         transferButton.click();
     }
 
     public void checkErrorMessage(String expectedErrorText) {
         errorMessage.shouldBe(visible, Duration.ofSeconds(15)).shouldHave(text(expectedErrorText));
-        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
     }
 }
