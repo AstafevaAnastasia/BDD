@@ -16,6 +16,8 @@ public class TransferPage {
 
     public DashboardPage makeValidTransfer(String amount, DataHelper.CardInfo fromCard) {
         makeTransfer(amount, fromCard);
+        // Добавляем ожидание для просмотра результата
+        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
         return new DashboardPage();
     }
 
