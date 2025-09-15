@@ -3,8 +3,9 @@ package ru.netology.page;
 import com.codeborne.selenide.SelenideElement;
 import ru.netology.data.DataHelper;
 
-import static com.codeborne.selenide.Condition.visible;
-import static com.codeborne.selenide.Condition.text;
+import java.time.Duration;
+
+import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.$;
 
 public class TransferPage {
@@ -21,10 +22,12 @@ public class TransferPage {
     public void makeTransfer(String amount, DataHelper.CardInfo fromCard) {
         amountField.setValue(amount);
         fromField.setValue(fromCard.getCardNumber());
+        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
         transferButton.click();
     }
 
     public void checkErrorMessage(String expectedErrorText) {
-        errorMessage.shouldBe(visible).shouldHave(text(expectedErrorText));
+        errorMessage.shouldBe(visible, Duration.ofSeconds(15)).shouldHave(text(expectedErrorText));
+        com.codeborne.selenide.Selenide.sleep(5000); // 3 секунды для просмотра
     }
 }

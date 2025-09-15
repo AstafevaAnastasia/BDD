@@ -27,7 +27,11 @@ public class DataHelper {
     }
 
     public static int generateValidAmount(int balance) {
-        return faker.number().numberBetween(1, balance);
+        int absoluteBalance = Math.abs(balance);
+        if (absoluteBalance <= 1) {
+            return absoluteBalance;
+        }
+        return faker.number().numberBetween(1, absoluteBalance);
     }
 
     public static int generateInvalidAmount(int balance) {
